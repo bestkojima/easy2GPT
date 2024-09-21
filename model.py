@@ -4,7 +4,7 @@ import numpy as np
 config={
     "vocab_size": 50257,
     "block_size": 1024, # seq length
-    "n_layer": 24,
+    "n_layer": 2,
     "n_head": 16,
     "n_embd": 16,
     "dropout": 0.1,
@@ -114,7 +114,7 @@ class embAndpos(nn.Module):
     def forward(self, x):
         batch_size, seq_len = x.size()
         token_emb=self.token_emb(x)
-        token_pos=self.token_pos(torch.arange(self.block_size))[:seq_len]
+        token_pos=self.token_pos(torch.arange(self.block_size,device=x.device))[:seq_len]
         
         return token_emb+token_pos
 
@@ -171,15 +171,25 @@ def generate(index,max_new_token,cxt_size,model):
     return index
         
 
+"""
+input 放入device中 %% 由dataloader放入
+model 中 使用 torch形成的tensor转移device
+model 放入device中
 
+
+"""
 
         
 if __name__ == "__main__":
+    
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # i=torch.randn(4,5,config["n_embd"]) #already pos&emb
-    i=torch.randint(0,20,(4,5)) # str2index
+    i=torch.randint(0,20,(4,5)).to(device) # str2index
+    
     #print(i.shape)
     #TODO tokenizer未实现
     c=GPT2()
+    c.to("cuda")
     #print(c(i).size())
     generate(i,2,3,c)
    

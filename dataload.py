@@ -3,8 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import tiktoken
 from pprint import pp,pprint
-with open("test.txt","r",encoding="utf-8") as f:
-    txt=f.read()
+
     
 
 class GPT2Dataset(Dataset):
@@ -42,6 +41,7 @@ def get_dataloader(txt,max_length=256,stride=128,batch_size=4,
 
 
 if __name__=="__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     with open(file="test.txt") as f:
         txt=f.read()
     dataloader=get_dataloader(txt,batch_size=2, max_length=256, stride=256)
